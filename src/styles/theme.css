@@ -1,0 +1,196 @@
+@custom-variant dark (&:is(.dark *));
+
+/* Light theme (used when dark mode is switched off).
+   Previously these were the same as the dark values, so the toggle did nothing. */
+:root {
+  --font-size: 15px;
+  --background: #f4f5f7;
+  --foreground: #16181c;
+  --card: #ffffff;
+  --card-foreground: #16181c;
+  --popover: #ffffff;
+  --popover-foreground: #16181c;
+  --primary: #d63a00;            /* darker orange so small orange text passes contrast on white */
+  --primary-foreground: #ffffff;
+  --secondary: #eceef2;
+  --secondary-foreground: #16181c;
+  --muted: #eceef2;
+  --muted-foreground: #5a606b;
+  --accent: #d63a00;
+  --accent-foreground: #ffffff;
+  --destructive: #c53030;
+  --destructive-foreground: #ffffff;
+  --border: rgba(20, 22, 28, 0.12);
+  --input: transparent;
+  --input-background: #eef0f3;
+  --switch-background: #c9ccd3;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #d63a00;
+  --chart-1: #d63a00;
+  --chart-2: #1f9e6e;
+  --chart-3: #2f7fc0;
+  --chart-4: #b8860b;
+  --chart-5: #8e44c9;
+  --radius: 0.375rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #16181c;
+  --sidebar-primary: #d63a00;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eceef2;
+  --sidebar-accent-foreground: #16181c;
+  --sidebar-border: rgba(20, 22, 28, 0.12);
+  --sidebar-ring: #d63a00;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #0d0e10;
+  --foreground: #e8e9eb;
+  --card: #16181c;
+  --card-foreground: #e8e9eb;
+  --popover: #1e2025;
+  --popover-foreground: #e8e9eb;
+  --primary: #ff4500;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2025;
+  --secondary-foreground: #e8e9eb;
+  --muted: #1e2025;
+  --muted-foreground: #8a8e99;
+  --accent: #ff4500;
+  --accent-foreground: #ffffff;
+  --destructive: #e53e3e;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #1e2025;
+  --input-background: #1e2025;
+  --switch-background: #3a3d45;
+  --ring: #ff4500;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: #ff4500;
+  --chart-2: #46d39a;
+  --chart-3: #4fa3e0;
+  --chart-4: #f5c542;
+  --chart-5: #c77dff;
+  --sidebar: #16181c;
+  --sidebar-foreground: #e8e9eb;
+  --sidebar-primary: #ff4500;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e2025;
+  --sidebar-accent-foreground: #e8e9eb;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #ff4500;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+/* Hide scrollbars on horizontal strips (used by the sort bar and reels) */
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Respect reduced-motion settings */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

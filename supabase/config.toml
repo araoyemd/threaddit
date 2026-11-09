@@ -1,0 +1,10 @@
+# Supabase CLI settings for deploying the backend from GitHub.
+# The function keeps the name Figma Make gave it, so existing URLs keep working:
+#   https://<project>.supabase.co/functions/v1/make-server-8937b06c/...
+project_id = "drrydzbxdwuapiaurkdp"
+
+[functions.make-server-8937b06c]
+entrypoint = "./functions/server/index.tsx"
+import_map = "./functions/server/deno.json"
+# The app and the scheduler send the project's anon key as a Bearer token
+verify_jwt = true

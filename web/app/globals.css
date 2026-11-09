@@ -1,0 +1,6 @@
+@import 'tailwindcss' source(none);
+@source '../app';
+@source '../../src';
+@import 'tw-animate-css';
+@import '../../src/styles/theme.css';
+@import '../../src/styles/host.css';

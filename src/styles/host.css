@@ -1,0 +1,7 @@
+/* Keeps fixed bars clear of phone notches and home indicators. */
+header.fixed { top: env(safe-area-inset-top, 0px); }
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 41; background: var(--card);
+}
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }

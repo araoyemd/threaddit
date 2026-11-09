@@ -1,0 +1,51 @@
+// Gold, rate limits, moderation, notifications and recurring threads, against the preview backend.
+// Run: npm run test:site
+const mem = new Map<string,string>();
+(globalThis as any).localStorage = { getItem:(k:string)=>mem.has(k)?mem.get(k)!:null, setItem:(k:string,v:string)=>{mem.set(k,v)}, removeItem:(k:string)=>{mem.delete(k)} };
+const api = await import("../src/preview/api");
+const { supabase } = await import("../src/preview/supabase");
+const ok = (c:boolean, m:string) => { console.log((c?"PASS ":"FAIL ")+m); if(!c) process.exitCode=1; };
+const tok = async (email:string) => (await supabase.auth.signInWithPassword({email, password:"longpass1"})).data.session!.access_token;
+await api.signUp("a@x.ng","longpass1","Ada"); await api.signUp("b@x.ng","longpass1","Bayo");
+await api.signUp("c@x.ng","longpass1","Chi"); await api.signUp("d@x.ng","longpass1","Dele");
+const A=await tok("a@x.ng"), B=await tok("b@x.ng"), C=await tok("c@x.ng"), D=await tok("d@x.ng");
+const p = await api.createPost(A, {community:"Lagos", title:"Test post"});
+ok((await api.getGold(A)).posts===10, "post gives +10 once");
+await api.votePost(A, String(p.id), "up");
+ok((await api.getGold(A)).votes===0, "voting on own post earns nothing");
+await api.votePost(B, String(p.id), "up"); await api.votePost(B, String(p.id), "up"); await api.votePost(B, String(p.id), "up");
+ok((await api.getGold(A)).votes===1, "upvote gold once per voter, even after toggling");
+ok((await api.getGold(B)).votes===0, "voter earns nothing");
+await api.createPost(B,{community:"Kano",title:"b1"}); await api.createPost(B,{community:"Kano",title:"b2"});
+await api.createPost(B,{community:"Kano",title:"b3"});
+let limited=false; try{ await api.createPost(B,{community:"Kano",title:"b4"}); }catch(e:any){ limited=/New accounts can make 3/.test(e.message); }
+ok(limited, "new accounts limited to 3 posts a day");
+await api.giveAward(B, String(p.id), "helpful");
+const ga=await api.getGold(A), gb=await api.getGold(B);
+ok(ga.awards===10 && gb.spent===20, "award: giver pays 20, author gets 10");
+let self=false; try{ await api.giveAward(A,String(p.id),"helpful"); }catch(e:any){ self=/own post/.test(e.message); } ok(self,"can't award own post");
+const cm = await api.createComment(B, String(p.id), "Nice one");
+await api.createComment(A, String(p.id), "Thanks!", cm.id);
+const nA = await api.getNotifications(A), nB = await api.getNotifications(B);
+ok(nA.some(n=>n.type==="comment") && nA.some(n=>n.type==="award"), "author notified of comment and award");
+ok(nB.some(n=>n.type==="reply"), "commenter notified of reply");
+ok((await api.getPost(String(p.id))).comments.length===2, "comments stored and threaded");
+for (const t of [B,C,D]) await api.report(t,"post",String(p.id),"spam");
+ok((await api.getPosts(C)).every(x=>String(x.id)!==String(p.id)), "hidden from others after 3 reports");
+ok((await api.getPosts(A)).some(x=>String(x.id)===String(p.id)), "author still sees hidden post");
+ok((await api.getModQueue(A,"Lagos")).length===1, "first account (preview admin) sees mod queue");
+let denied=false; try{ await api.getModQueue(C,"Lagos"); }catch{ denied=true } ok(denied,"non-moderators can't see queue");
+await api.moderate(A,"post",String(p.id),"approve");
+ok((await api.getPosts(C)).some(x=>String(x.id)===String(p.id)), "approve makes it visible again");
+await api.createCommunity(C,{name:"AbaTraders"});
+ok((await api.getGold(C)).communities===50, "founding gives +50");
+let cool=false; try{ await api.createCommunity(C,{name:"AbaTraders2"}); }catch(e:any){ cool=/per day/.test(e.message); } ok(cool,"one community per day");
+let res=false; try{ await api.createCommunity(D,{name:"Lagos"}); }catch(e:any){ res=/already exists/.test(e.message); } ok(res,"built-in names reserved");
+let poor=false; try{ await api.setProfileFlair(D,"Corper"); }catch(e:any){ poor=/150 gold/.test(e.message); } ok(poor,"flair needs 150 gold");
+const posts = await api.getPosts(null);
+ok(posts.some(x=>x.title.startsWith("Weekly fuel price check-in") && x.pinned) && posts.some(x=>x.title.startsWith("NYSC questions thread")), "recurring threads created and pinned");
+await api.getPosts(null); ok((await api.getPosts(null)).filter(x=>x.title.startsWith("Weekly fuel")).length===1, "recurring thread not duplicated");
+await api.setJoined(D,"Kano",true); await api.createPost(A,{community:"Kano",title:"Kano news"});
+ok((await api.getNotifications(D)).some(n=>n.type==="community"), "members notified of new community posts");
+for (let i=0;i<9;i++){ const s=["e","f","g","h","i","j","k","l","m"][i]; await api.signUp(`${s}@x.ng`,"longpass1",`User${s}`); await api.votePost(await tok(`${s}@x.ng`), String(p.id), "up"); }
+ok((await api.getNotifications(A)).some(n=>n.type==="milestone" && /10 upvotes/.test(n.text)), "milestone notification at 10 upvotes");
