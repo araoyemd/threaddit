@@ -8,6 +8,7 @@ on:
     paths:
       - "supabase/functions/**"
       - "supabase/config.toml"
+      - ".github/workflows/deploy-backend.yml"
   workflow_dispatch:
 
 concurrency:
@@ -38,4 +39,5 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - run: supabase functions deploy make-server-8937b06c --project-ref "$PROJECT_REF"
+      # --yes: the CLI asks for confirmation, which an automated run cannot answer
+      - run: supabase functions deploy make-server-8937b06c --project-ref "$PROJECT_REF" --yes
