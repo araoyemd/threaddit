@@ -12,7 +12,15 @@ import type { Post, PostDetail, Community, UserProfile } from "../../src/app/typ
 const BASE = `https://${projectId}.supabase.co/functions/v1/make-server-8937b06c`;
 const DEMO = process.env.THREADIT_DEMO === "1";
 
-export const SITE_URL = (process.env.THREADIT_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+// The site's public address, used for canonical links, share images, the sitemap
+// and robots.txt. Set THREADIT_SITE_URL in Vercel (https://www.owanbe.com); if it's
+// missing, fall back to the production domain Vercel provides, never localhost.
+const vercelProd = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+export const SITE_URL = (
+  process.env.THREADIT_SITE_URL?.trim() ||
+  (vercelProd ? `https://${vercelProd}` : "") ||
+  "http://localhost:3000"
+).replace(/\/$/, "");
 
 async function get<T>(path: string, revalidate = 60): Promise<T | null> {
   if (DEMO) return null;
